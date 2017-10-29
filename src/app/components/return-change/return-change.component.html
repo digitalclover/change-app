@@ -1,0 +1,24 @@
+<section>
+    <h1>Time for Change!</h1>
+    <form (submit)="getChange(amount.value)">
+      <div>
+        <label for="chooseType">Choose Type</label>
+        <input type="radio" name="chooseType" value="limitedStock" (change)="changeCoinMethod('limitedStock')">limited
+        <input type="radio" name="chooseType" value="unlimitedStock" (change)="changeCoinMethod('unlimitedStock')" checked>unlimited
+      </div>
+      <div>
+        <label for="amount">Enter desired amount</label>
+        <input type="number" #amount placeholder="£0.00">
+      </div>
+      <button type="submit">Get Change</button>
+    </form>
+  </section>
+<section>
+  <h1>Here's your Change</h1>
+  <ul *ngIf="!error.status; else errorBlock">
+    <div *ngFor="let coin of coins;">
+      <li *ngIf="coin.returned > 0;">{{coin.name}}: {{coin.returned}}</li>
+    </div>
+  </ul>
+  <ng-template #errorBlock>{{error.message}}</ng-template>
+</section>
