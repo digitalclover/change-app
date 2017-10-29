@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 
+// Define coin model
 interface Coin {
   name:string,
   value:number,
   returned:number;
 }
 
+// Define error model
 interface Error {
   status:boolean,
   message:string
@@ -18,6 +20,7 @@ interface Error {
 })
 export class ReturnChangeComponent implements OnInit {
 
+  // Define component model
   coinMethod:string;
   amount:number;
   remainder:number;
@@ -26,11 +29,16 @@ export class ReturnChangeComponent implements OnInit {
   coins:Coin[];
 
   constructor() {
-    this.coinMethod = 'unlimitedStock';
+    // Limited coin inventory be default
+    this.coinMethod = 'limitedInv';
     this.error = {
       status:false,
       message:''
     }
+
+    // Define coin inventory
+    // Could have been added to 'this.coins' object,
+    // but kept sepearate to fulfill criteria.
     this.inventory = {
       "One Pound":11,
       "Fifty Pence":24,
@@ -40,6 +48,8 @@ export class ReturnChangeComponent implements OnInit {
       "Two Pence":11,
       "One Penny":23
     };
+
+    // Define coin denomination
     this.coins = [
       {
         name:"One Pound",
@@ -78,18 +88,46 @@ export class ReturnChangeComponent implements OnInit {
     ]
   }
 
+  
   ngOnInit() { }
 
-  changeCoinMethod(method){
-    this.coinMethod=method;
+  // Switch between limited and unlimited inventory
+  // Resets errors and closes inventory sidebar when appropriate
+  changeCoinMethod(inventoryDrawer){
+    this.resetError();
+    this.initializeCoins();
+    if(this.coinMethod == 'unlimitedInv'){
+      this.coinMethod = 'limitedInv';
+    }else{
+      if(inventoryDrawer.opened){
+        inventoryDrawer.close();
+      }
+      this.coinMethod = 'unlimitedInv'
+    }
   }
 
+  // Could be its own function, but used reference to constructor instead
+  // If coin method is set to unlimited, change it.
+  reset(cMethod){
+    this.constructor();
+    if(cMethod.checked){
+      cMethod.toggle();
+    }
+  }
+
+  // Reset coin return values
   initializeCoins(){
     for(let key in this.coins){
       this.coins[key].returned = 0;
     }
   }
 
+  resetError(){
+    this.error.status=false;
+    this.error.message='';
+  }
+
+  // Reset coins, get queried amount, call specific method
   getChange(amount){
     event.preventDefault();
     this.initializeCoins();
@@ -98,7 +136,9 @@ export class ReturnChangeComponent implements OnInit {
     this[this.coinMethod]();
   }
 
-  unlimitedStock(){
+  // Part 1 Criteria
+  // Returns least number of coins from unlimited inventory
+  unlimitedInv(){
     let i:number = 0;
     while(i<this.coins.length){
       this.remainder -= this.coins[i].value;
@@ -109,11 +149,11 @@ export class ReturnChangeComponent implements OnInit {
         i++;
       }
     }
-    console.log(this.coins);
   }
 
-  limitedStock(){
-    console.log('limited ran');
+  // Part 2 Criteria
+  // Returns least number of coins from limited inventory
+  limitedInv(){
     let i:number = 0;
     let stock:number;
     while(i<this.coins.length){
@@ -132,5 +172,4 @@ export class ReturnChangeComponent implements OnInit {
       this.error.message = 'Insufficient coins';
     }
   }
-
 }
